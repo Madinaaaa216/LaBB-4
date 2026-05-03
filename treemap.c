@@ -138,9 +138,16 @@ void insertTreeMap(TreeMap * tree, void* key, void * value) {
 
 TreeNode * minimum(TreeNode * x){
 
-    return NULL;
-}
+    if (x == NULL) {
+        return NULL;
+    }
 
+    while (x->left != NULL) {
+        x = x->left;
+    }
+
+    return x;
+}
 // 5.- Implemente la función void removeNode(TreeMap * tree, TreeNode* node). 
 // Esta función elimina el nodo node del árbol tree. 
 // Recuerde que para eliminar un nodo existen 3 casos: 
@@ -151,16 +158,57 @@ TreeNode * minimum(TreeNode * x){
 
 void removeNode(TreeMap * tree, TreeNode* node) {
 
-}
+    if (node == NULL) return;
 
-void eraseTreeMap(TreeMap * tree, void* key){
-    if (tree == NULL || tree->root == NULL) return;
+    // Caso 1: nodo sin hijos
+    if (node->left == NULL && node->right == NULL) {
 
-    if (searchTreeMap(tree, key) == NULL) return;
-    TreeNode* node = tree->current;
-    removeNode(tree, node);
+        if (node->parent == NULL) {
+            tree->root = NULL;
+        }
+        else if (node->parent->left == node) {
+            node->parent->left = NULL;
+        }
+        else {
+            node->parent->right = NULL;
+        }
 
-}
+        free(node->pair);
+        free(node);
+    }
+
+    else if (node->left == NULL || node->right == NULL) {
+
+        TreeNode *hijo;
+
+        if (node->left != NULL)
+            hijo = node->left;
+        else
+            hijo = node->right;
+
+        if (node->parent == NULL) {
+            tree->root = hijo;
+            hijo->parent = NULL;
+        }
+        else if (node->parent->left == node) {
+            node->parent->left = hijo;
+            hijo->parent = node->parent;
+        }
+        else {
+            node->parent->right = hijo;
+            hijo->parent = node->parent;
+        }
+
+        free(node->pair);
+        free(node);
+    }
+    else {
+        TreeNode *menor = minimum(node->right);
+
+        node->pair->key = menor->pair->key;
+        node->pair->value = menor->pair->value;
+
+        removeNode(tree, menor);
 
 // 6.- Implemente las funciones para recorrer la estructura: 
 // Pair* firstTreeMap(TreeMap* tree) retorna el primer Pair del mapa (el menor). 
