@@ -44,14 +44,11 @@ TreeNode * createTreeNode(void* key, void * value) {
     
 TreeMap * createTreeMap(int (*lower_than) (void* key1, void* key2)) {
 
-    // Reservar memoria para el mapa
     TreeMap *mapa = (TreeMap *) malloc(sizeof(TreeMap));
 
     if (mapa == NULL) {
         return NULL;
     }
-
-    // Inicializar variables
     mapa->root = NULL;
     mapa->current = NULL;
     mapa->lower_than = lower_than;
@@ -70,15 +67,12 @@ Pair * searchTreeMap(TreeMap * tree, void* key) {
 
     while (actual != NULL) {
 
-        // Si la clave buscada es menor, ir a la izquierda
         if (tree->lower_than(key, actual->pair->key)) {
             actual = actual->left;
         }
-        // Si la clave buscada es mayor, ir a la derecha
         else if (tree->lower_than(actual->pair->key, key)) {
             actual = actual->right;
         }
-        // Si no es menor ni mayor, son iguales
         else {
             tree->current = actual;
             return actual->pair;
@@ -95,6 +89,46 @@ Pair * searchTreeMap(TreeMap * tree, void* key) {
 
 void insertTreeMap(TreeMap * tree, void* key, void * value) {
 
+    TreeNode *padre = NULL;
+    TreeNode *actual = tree->root;
+    
+    while (actual != NULL) {
+        padre = actual;
+
+        if (tree->lower_than(key, actual->pair->key)) {
+            actual = actual->left;
+        }
+        else if (tree->lower_than(actual->pair->key, key)) {
+            actual = actual->right;
+        }
+        else {
+            return;
+        }
+    }
+
+    TreeNode *nuevo = (TreeNode *) malloc(sizeof(TreeNode));
+    Pair *par = (Pair *) malloc(sizeof(Pair));
+
+    par->key = key;
+    par->value = value;
+
+    nuevo->pair = par;
+    nuevo->left = NULL;
+    nuevo->right = NULL;
+    nuevo->parent = padre;
+
+    if (padre == NULL) {
+        tree->root = nuevo;
+    }
+    else if (tree->lower_than(key, padre->pair->key)) {
+        padre->left = nuevo;
+    }
+    else {
+        padre->right = nuevo;
+    }
+
+
+    tree->current = nuevo;
 }
 
 // 4. Implemente la función TreeNode * minimum(TreeNode * x). 
