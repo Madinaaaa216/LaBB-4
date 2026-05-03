@@ -45,3 +45,45 @@ test.c:503:5: error: ‘main’ defined but not used [-Werror=unused-function]
       |     ^~~~
 cc1: all warnings being treated as errors
 bc86757
+Sun May  3 11:42:32 PM UTC 2026: 
+ treemap.c | 63 ++++++++++++++++++++++++++++++++++++++-------------------------
+ 1 file changed, 38 insertions(+), 25 deletions(-)
+Compilation failed
+In file included from test.c:4:
+treemap.c: In function ‘removeNode’:
+treemap.c:140:27: error: implicit declaration of function ‘minimum’ [-Wimplicit-function-declaration]
+  140 |         TreeNode *menor = minimum(node->right);
+      |                           ^~~~~~~
+treemap.c:140:27: error: initialization of ‘TreeNode *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+treemap.c:152:12: error: conflicting types for ‘minimum’; have ‘TreeNode *(TreeNode *)’
+  152 | TreeNode * minimum(TreeNode * x){
+      |            ^~~~~~~
+treemap.c:140:27: note: previous implicit declaration of ‘minimum’ with type ‘int()’
+  140 |         TreeNode *menor = minimum(node->right);
+      |                           ^~~~~~~
+test.c: In function ‘removeNode’:
+test.c:503:5: error: ‘main’ is normally a non-static function [-Werror=main]
+  503 | int main( int argc, char *argv[] ) {
+      |     ^~~~
+test.c:606:1: error: expected declaration or statement at end of input
+  606 | }
+      | ^
+treemap.c:193:5: note: ‘-Wmisleading-indentation’ is disabled from this point onwards, since column-tracking was disabled due to the size of the code/headers
+  193 |     else if (node->left == NULL || node->right == NULL) {
+      |     ^~~~
+treemap.c:193:5: note: adding ‘-flarge-source-files’ will allow for more column-tracking support, at the expense of compilation time and memory
+test.c:606:1: error: expected declaration or statement at end of input
+  606 | }
+      | ^
+test.c: In function ‘removeNode’:
+test.c:606:1: error: expected declaration or statement at end of input
+test.c:606:1: error: expected declaration or statement at end of input
+test.c: At top level:
+test.c:503:5: error: ‘main’ defined but not used [-Werror=unused-function]
+  503 | int main( int argc, char *argv[] ) {
+      |     ^~~~
+treemap.c:172:6: error: ‘removeNode’ defined but not used [-Werror=unused-function]
+  172 | void removeNode(TreeMap * tree, TreeNode* node) {
+      |      ^~~~~~~~~~
+cc1: all warnings being treated as errors
+6f46a27

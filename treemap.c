@@ -87,49 +87,62 @@ Pair * searchTreeMap(TreeMap * tree, void* key) {
 // Para insertar un dato, primero debe realizar una búsqueda para encontrar donde debería ubicarse. 
 // Luego crear el nuevo nodo y enlazarlo. Si la clave del dato ya existe retorne sin hacer nada (recuerde que el mapa no permite claves repetidas).
 
-void insertTreeMap(TreeMap * tree, void* key, void * value) {
+void removeNode(TreeMap * tree, TreeNode* node) {
 
-    TreeNode *padre = NULL;
-    TreeNode *actual = tree->root;
-    
-    while (actual != NULL) {
-        padre = actual;
+    if (node == NULL) return;
 
-        if (tree->lower_than(key, actual->pair->key)) {
-            actual = actual->left;
+    // Caso 1: nodo sin hijos
+    if (node->left == NULL && node->right == NULL) {
+
+        if (node->parent == NULL) {
+            tree->root = NULL;
         }
-        else if (tree->lower_than(actual->pair->key, key)) {
-            actual = actual->right;
+        else if (node->parent->left == node) {
+            node->parent->left = NULL;
         }
         else {
-            return;
+            node->parent->right = NULL;
         }
+
+        free(node->pair);
+        free(node);
     }
 
-    TreeNode *nuevo = (TreeNode *) malloc(sizeof(TreeNode));
-    Pair *par = (Pair *) malloc(sizeof(Pair));
+    // Caso 2: nodo con un hijo
+    else if (node->left == NULL || node->right == NULL) {
 
-    par->key = key;
-    par->value = value;
+        TreeNode *hijo;
 
-    nuevo->pair = par;
-    nuevo->left = NULL;
-    nuevo->right = NULL;
-    nuevo->parent = padre;
+        if (node->left != NULL)
+            hijo = node->left;
+        else
+            hijo = node->right;
 
-    if (padre == NULL) {
-        tree->root = nuevo;
+        if (node->parent == NULL) {
+            tree->root = hijo;
+            hijo->parent = NULL;
+        }
+        else if (node->parent->left == node) {
+            node->parent->left = hijo;
+            hijo->parent = node->parent;
+        }
+        else {
+            node->parent->right = hijo;
+            hijo->parent = node->parent;
+        }
+
+        free(node->pair);
+        free(node);
     }
-    else if (tree->lower_than(key, padre->pair->key)) {
-        padre->left = nuevo;
-    }
+
+    // Caso 3: nodo con dos hijos
     else {
-        padre->right = nuevo;
-    }
+        TreeNode *menor = minimum(node->right);
 
+        node->pair->key = menor->pair->key;
+        node->pair->value = menor->pair->value;
 
-    tree->current = nuevo;
-}
+        removeNode(tree, menor);
 
 // 4. Implemente la función TreeNode * minimum(TreeNode * x). 
 // Esta función retorna el nodo con la mínima clave ubicado en el subárbol con raiz x. 
