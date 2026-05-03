@@ -169,19 +169,46 @@ void eraseTreeMap(TreeMap * tree, void* key){
 
 }
 
-// 6.- Implemente las funciones para recorrer la estructura: 
-// Pair* firstTreeMap(TreeMap* tree) retorna el primer Pair del mapa (el menor). 
-// Pair* nextTreeMap(TreeMap* tree) retornar el siguiente Pair del mapa a partir del puntero TreeNode* current. 
-// Recuerde actualizar este puntero.
-
 Pair * firstTreeMap(TreeMap * tree) {
-    return NULL;
+
+    if (tree == NULL || tree->root == NULL) {
+        return NULL;
+    }
+
+    tree->current = minimum(tree->root);
+    return tree->current->pair;
 }
 
 Pair * nextTreeMap(TreeMap * tree) {
-    return NULL;
-}
 
+    if (tree == NULL || tree->current == NULL) {
+        return NULL;
+    }
+
+    TreeNode *actual = tree->current;
+
+    // Si tiene hijo derecho, el siguiente es el mínimo de ese subárbol
+    if (actual->right != NULL) {
+        tree->current = minimum(actual->right);
+        return tree->current->pair;
+    }
+
+    // Subir hasta encontrar un padre donde venga desde la izquierda
+    TreeNode *padre = actual->parent;
+
+    while (padre != NULL && actual == padre->right) {
+        actual = padre;
+        padre = padre->parent;
+    }
+
+    tree->current = padre;
+
+    if (padre == NULL) {
+        return NULL;
+    }
+
+    return padre->pair;
+}
 // 7. La función Pair* upperBound(TreeMap* tree, void* key) retorna el Pair con clave igual a key. 
 // En caso de no encontrarlo retorna el primer par asociado a una clave mayor o igual a key. 
 // Para implementarla puede realizar una búsqueda normal y usar un puntero a nodo auxiliar ub_node que vaya guardando el nodo con la menor clave mayor o igual a key. 
