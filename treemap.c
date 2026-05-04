@@ -158,16 +158,77 @@ TreeNode * minimum(TreeNode * x){
 
 void removeNode(TreeMap * tree, TreeNode* node) {
 
+    if (tree == NULL || node == NULL) return;
+
+    if (node->left == NULL && node->right == NULL) {
+
+        if (node->parent == NULL) {
+            tree->root = NULL;
+        }
+        else if (node->parent->left == node) {
+            node->parent->left = NULL;
+        }
+        else {
+            node->parent->right = NULL;
+        }
+
+        free(node->pair);
+        free(node);
+    }
+
+    else if (node->left == NULL || node->right == NULL) {
+
+        TreeNode *hijo;
+
+        if (node->left != NULL)
+            hijo = node->left;
+        else
+            hijo = node->right;
+
+        if (node->parent == NULL) {
+            tree->root = hijo;
+            hijo->parent = NULL;
+        }
+        else if (node->parent->left == node) {
+            node->parent->left = hijo;
+            hijo->parent = node->parent;
+        }
+        else {
+            node->parent->right = hijo;
+            hijo->parent = node->parent;
+        }
+
+        free(node->pair);
+        free(node);
+    }
+
+    else {
+
+        TreeNode *menor = minimum(node->right);
+
+        node->pair->key = menor->pair->key;
+        node->pair->value = menor->pair->value;
+
+        removeNode(tree, menor);
+    }
 }
 
 void eraseTreeMap(TreeMap * tree, void* key){
+
     if (tree == NULL || tree->root == NULL) return;
 
     if (searchTreeMap(tree, key) == NULL) return;
-    TreeNode* node = tree->current;
-    removeNode(tree, node);
 
+    TreeNode *nodo = tree->current;
+
+    removeNode(tree, nodo);
 }
+
+
+// 6.- Implemente las funciones para recorrer la estructura: 
+// Pair* firstTreeMap(TreeMap* tree) retorna el primer Pair del mapa (el menor). 
+// Pair* nextTreeMap(TreeMap* tree) retornar el siguiente Pair del mapa a partir del puntero TreeNode* current. 
+// Recuerde actualizar este puntero.
 
 Pair * firstTreeMap(TreeMap * tree) {
 
@@ -187,13 +248,10 @@ Pair * nextTreeMap(TreeMap * tree) {
 
     TreeNode *actual = tree->current;
 
-    // Si tiene hijo derecho, el siguiente es el mínimo de ese subárbol
     if (actual->right != NULL) {
         tree->current = minimum(actual->right);
         return tree->current->pair;
     }
-
-    // Subir hasta encontrar un padre donde venga desde la izquierda
     TreeNode *padre = actual->parent;
 
     while (padre != NULL && actual == padre->right) {
